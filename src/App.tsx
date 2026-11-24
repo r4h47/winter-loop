@@ -13,17 +13,21 @@ import { defaultCosts, GROUP, isCosts, planRange, readCosts, syncGas, withBeds }
 import { planFromHash, planLink } from './lib/share'
 import './lib/offline'
 import { usd } from './lib/money'
+import { useLive } from './lib/location'
+import type { Track } from './lib/plazas'
 import { scrollToId, useStored } from './lib/hooks'
 
-type Ui = { day: Day; detour: boolean; block: Block | 'All'; stop: string; view: View; depart: Depart }
+type Ui = { track: Track | null; day: Day; detour: boolean; block: Block | 'All'; stop: string; view: View; depart: Depart }
 const isString = (v: unknown): v is string => typeof v === 'string'
 
 const initial = (): Ui => {
   const q = new URLSearchParams(location.search)
   const detour = q.get('detour') !== '0'
   const view = q.get('view')
+  const track = q.get('plazas')
   return {
     detour,
+    track: track === 'day1' || track === 'day2' || track === 'storm' ? track : null,
     day: q.get('day') === '2' ? 2 : 1,
     block: blocks.find((b) => b === q.get('time')) ?? 'All',
     stop: activeStops(detour).find((s) => s.id === q.get('stop'))?.id ?? 'stockbridge',
@@ -46,7 +50,7 @@ export default function App() {
   const other = totals(activeStops(!ui.detour))
   const range = planRange(miles, costs.beds)
   const price = `${usd(Math.floor(range.low / GROUP))}–${usd(Math.ceil(range.high / GROUP))}`
-  const tradeoff = `Leave the motel at ${motelLeave(true)} with Saratoga, or ${motelLeave(false)} without it. The detour adds ${Math.abs(miles - Math.round(other.miles))} miles and ${duration(Math.abs(route.minutes - other.minutes))} of driving.`
+  const tradeoff = `You leave the motel at ${motelLeave(true)} either way. Skipping Saratoga gives you 1 hr 45 min more in Manchester and 25 min more in Bennington, and cuts ${Math.abs(miles - Math.round(other.miles))} miles and ${duration(Math.abs(route.minutes - other.minutes))} of driving.`
   useEffect(() => {
     const known = [430, Math.round(totals(activeStops(true)).miles), Math.round(totals(activeStops(false)).miles)]
     setCosts((c) => syncGas(readCosts(c) ?? defaultCosts, miles, known))
@@ -59,6 +63,7 @@ export default function App() {
     if (!ui.detour) q.set('detour', '0')
     if (ui.depart === '27') q.set('depart', '27')
     if (ui.view !== 'all') q.set('view', ui.view)
+    if (ui.track) q.set('plazas', ui.track)
     if (ui.stop !== 'stockbridge') q.set('stop', ui.stop)
     const s = q.toString()
     history.replaceState(null, '', `${location.pathname}${s ? `?${s}` : ''}${location.hash}`)
@@ -66,6 +71,7 @@ export default function App() {
 
   const setDay = (day: Day) => patch({ day, view: `day${day}`, stop: stops.find((s) => s.id === ui.stop)?.day === day ? ui.stop : stops.find((s) => s.day === day && s.photo)!.id })
   const setView = (view: View) => {
+    patch({ track: null })
     if (view === 'all') patch({ view })
     else setDay(view === 'day1' ? 1 : 2)
   }
@@ -81,7 +87,17 @@ export default function App() {
   }
   const showMap = (id: string) => {
     const s = stops.find((x) => x.id === id)
-    if (s) patch({ stop: id, view: `day${s.day}` })
+    if (s) patch({ stop: id, view: `day${s.day}`, track: null })
+    scrollToId('map')
+  }
+  const gps = useLive()
+  const setTrack = (track: Track | null) => {
+    if (!track) gps.stop()
+    patch(track ? { track, view: track === 'day1' ? 'day1' : 'day2' } : { track })
+  }
+  const showPlazas = (day: Day) => {
+    setTrack(`day${day}`)
+    gps.start()
     scrollToId('map')
   }
   const setDetour = (detour: boolean) => patch({ detour, stop: !detour && ui.stop === 'saratoga' ? 'bennington' : ui.stop })
@@ -118,9 +134,9 @@ export default function App() {
       )}
       <main id="main" tabIndex={-1}>
         <Hero depart={ui.depart} setDepart={(depart) => patch({ depart })} miles={miles} price={price} />
-        <TripDay stops={stops} depart={ui.depart} motel={motel} />
+        <TripDay onPlazas={showPlazas} stops={stops} depart={ui.depart} motel={motel} />
         <Itinerary stops={stops} day={ui.day} setDay={setDay} block={ui.block} setBlock={(block) => patch({ block })} depart={ui.depart} detour={ui.detour} setDetour={setDetour} tradeoff={tradeoff} selected={ui.stop} onShowMap={showMap} />
-        <RouteMap stops={stops} view={ui.view} setView={setView} motel={motel} selected={ui.stop} onSelect={select} onOpen={open} />
+        <RouteMap stops={stops} view={ui.view} setView={setView} motel={motel} selected={ui.stop} onSelect={select} onOpen={open} track={ui.track} setTrack={setTrack} gps={gps} />
         <Stays motel={motel} setMotel={setMotel} people={costs.people} beds={costs.beds} setBeds={(b) => setCosts((c) => withBeds(readCosts(c) ?? defaultCosts, b))} depart={ui.depart} stops={stops} />
         <Packing />
         <Costs costs={costs} setCosts={setCosts} miles={miles} />

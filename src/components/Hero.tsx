@@ -13,7 +13,7 @@ function Countdown({ depart }: { depart: Depart }) {
   }, [])
   const start = departures[depart].days[0].getTime()
   const left = start - now
-  if (left <= 0) return <p className="countdown-done">{now > start + 35 * 3600e3 ? 'Trip complete' : 'On the road now'}</p>
+  if (left <= 0) return <p className="countdown-done">{now > start + 42 * 3600e3 ? 'Trip complete' : 'On the road now'}</p>
   const s = Math.floor(left / 1000)
   const parts = [[Math.floor(s / 86400), 'days'], [Math.floor(s / 3600) % 24, 'hours'], [Math.floor(s / 60) % 60, 'min'], [s % 60, 'sec']] as const
   return (

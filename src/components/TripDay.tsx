@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Check, Clock, MapPin, Navigation, RotateCcw } from 'lucide-react'
+import { Check, Clock, Fuel, MapPin, Navigation, RotateCcw } from 'lucide-react'
 import { departures, duration, legInfo, motels, type Day, type Depart, type Stop } from '../data/trip'
 import { easternNow, toMinutes, toTime, tripDayToday } from '../lib/clock'
 import { useStored } from '../lib/hooks'
@@ -15,12 +15,12 @@ const valid = (v: unknown): v is State => {
 function warning(stop: Stop, arrive: number) {
   if (stop.id === 'plaza' && arrive >= 18 * 60) return 'The last skating session will be over. Go straight to the motel.'
   if (stop.id === 'plaza' && arrive > 16 * 60) return 'You will miss the 4:00 PM start. The session still runs to 6:00 PM.'
-  if (stop.id === 'bennington' && arrive > 13 * 60) return 'Running late. Cut Manchester lunch short to keep VT‑30 in daylight.'
-  if (stop.id === 'manchester' && arrive > 14 * 60 + 30) return 'Skip the long lunch. Sunset is about 4:23 PM and VT‑30 is dark after that.'
+  if (stop.id === 'bennington' && arrive > 15 * 60) return 'Sunset is 4:24 PM. Keep the bridges short to see them in daylight.'
+  if (stop.id === 'manchester' && arrive > 16 * 60 + 24) return 'You will arrive after sunset. Head straight to dinner and the shops.'
   return ''
 }
 
-export function TripDay({ stops, depart, motel }: { stops: Stop[]; depart: Depart; motel: string }) {
+export function TripDay({ stops, depart, motel, onPlazas }: { onPlazas: (d: Day) => void; stops: Stop[]; depart: Depart; motel: string }) {
   const [s, set] = useStored<State>('winter-loop:trip-day', start, valid)
   const [today, setToday] = useState(() => tripDayToday(depart))
   useEffect(() => {
@@ -95,6 +95,7 @@ export function TripDay({ stops, depart, motel }: { stops: Stop[]; depart: Depar
               </>
             )}
             <div className="today-tools">
+              <button type="button" className="text-btn" onClick={() => onPlazas(s.day)}><Fuel size={16} aria-hidden="true" />Next Service Plaza</button>
               <button type="button" className="text-btn" disabled={s.late >= 705} onClick={() => go({ late: s.late + 15, left: undefined })}>Add 15 Min Delay</button>
               <button type="button" className="text-btn" disabled={s.at <= 1} onClick={() => go({ at: Math.max(1, Math.min(s.at, list.length) - 1), left: undefined })}>Previous Stop</button>
               <button type="button" className="text-btn" disabled={s.at === 1 && !s.late} onClick={() => go({ at: 1, late: 0, left: undefined })}><RotateCcw size={16} aria-hidden="true" />Reset Day</button>

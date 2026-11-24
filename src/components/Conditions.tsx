@@ -12,8 +12,8 @@ const places = [
 /* AlAdhan, ISNA angles, Hanafi Asr, at the place the schedule puts you. */
 type Prayer = [time: string, place: string]
 const day1: Prayer[] = [['5:48 AM', 'Boston'], ['7:15 AM', 'Worcester'], ['11:54 AM', 'Pittsfield'], ['2:46 PM', 'Albany'], ['4:28 PM', 'Albany'], ['5:53 PM', 'Albany']]
-const day2 = (fajr: string, asr: string): Prayer[] => [[fajr, 'Latham'], ['7:25 AM', 'Latham'], ['11:54 AM', 'Bennington'], [asr, 'Manchester'], ['4:23 PM', 'Brattleboro'], ['5:49 PM', 'Greenfield']]
-const prayer: Record<Depart, Prayer[][]> = { '26': [day1, day2('5:59 AM', '2:41 PM')], '27': [day1, day2('6:00 AM', '2:42 PM')] }
+const day2 = (fajr: string, dhuhr: string, asr: string, isha: string): Prayer[] => [[fajr, 'Latham'], ['7:25 AM', 'Latham'], [dhuhr, 'Saratoga'], [asr, 'Bennington'], ['4:24 PM', 'Manchester'], [isha, 'Manchester']]
+const prayer: Record<Depart, Prayer[][]> = { '26': [day1, day2('5:59 AM', '11:56 AM', '2:43 PM', '5:49 PM')], '27': [day1, day2('6:00 AM', '11:57 AM', '2:44 PM', '5:50 PM')] }
 const cols = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha']
 
 const sky = (c: number) =>

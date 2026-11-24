@@ -49,9 +49,9 @@ export function Stays({ motel, setMotel, people, beds, setBeds, depart, stops }:
           <Photo name="monument" alt="The Bennington Battle Monument above autumn trees and the Green Mountain foothills" sizes="(min-width: 1128px) 500px, calc(100vw - 48px)" />
           <dl>
             <div><dt>Room and Group</dt><dd>Two rooms is the safe choice for five. For one room, ask about the occupancy limit and an extra bed before booking.</dd></div>
-            <div><dt>Arrival Window</dt><dd>You reach Latham around {stops.find((s) => s.id === 'latham')?.time}. On Day 2, leave at {motelLeave(true)} with the Saratoga stop, or {motelLeave(false)} without it.</dd></div>
+            <div><dt>Arrival Window</dt><dd>You reach Latham around {stops.find((s) => s.id === 'latham')?.time}. On Day 2, sleep until 9:00 and leave at {motelLeave(true)}.</dd></div>
             <div><dt>Winter Driving</dt><dd>Check snow on NY‑7 and VT‑30 before you leave. If snow starts on the way home, use I‑91 South and I‑90 East instead of Route 2.</dd></div>
-            <div><dt>Storm Rule</dt><dd>At noon on Day 2, check New England 511. If VT‑30 is snow-covered or under an advisory, skip Manchester and take NY‑7 to Albany, then I‑90 East: about 208&nbsp;miles, up to 4&nbsp;hr&nbsp;27&nbsp;min.</dd></div>
+            <div><dt>Storm Rule</dt><dd>Before leaving Bennington, check New England 511. Manchester means driving VT‑30 in the dark. If VT‑30 is snow-covered or under an advisory, skip Manchester and take NY‑7 to Albany, then I‑90 East: about 208&nbsp;miles, up to 4&nbsp;hr&nbsp;27&nbsp;min.</dd></div>
             <div><dt>Drive Times</dt><dd>Every leg shows one routed drive time without traffic, on the cautious side, and the spare minutes before your arrival time. A second router came out shorter on most legs.</dd></div>
           </dl>
         </div>

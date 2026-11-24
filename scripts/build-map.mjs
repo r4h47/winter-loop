@@ -36,7 +36,7 @@ const simplify = (pts, tol) => {
 const legs = Object.fromEntries(
   route.legs.map((l) => {
     const pts = simplify(l.c.map((c) => projection(c)), 0.5)
-    return [`${l.a}-${l.b}`, { d: 'M' + pts.map((p) => p.map((n) => n.toFixed(1)).join(',')).join('L'), miles: +l.mi.toFixed(1), minutes: Math.round(l.min) }]
+    return [l.b ? `${l.a}-${l.b}` : l.a, { d: 'M' + pts.map((p) => p.map((n) => n.toFixed(1)).join(',')).join('L'), miles: +l.mi.toFixed(1), minutes: Math.round(l.min) }]
   }),
 )
 const points = Object.fromEntries(Object.entries(route.P).map(([k, c]) => [k, projection(c).map((n) => +n.toFixed(1))]))

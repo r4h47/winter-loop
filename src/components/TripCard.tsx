@@ -4,7 +4,7 @@ import { departures, duration, legInfo, motels, type Depart, type Stop } from '.
 import { download } from '../lib/ics'
 import { offlineReady } from '../lib/offline'
 
-const STORM = 'Storm rule: check New England 511 at noon on Day 2. If VT-30 is snow-covered or under an advisory, skip Manchester and return by NY-7 to Albany and I-90 East (about 208 miles, up to 4 hr 27 min).'
+const STORM = 'Storm rule: check New England 511 before leaving Bennington. If VT-30 is snow-covered or under an advisory, skip Manchester and return by NY-7 to Albany and I-90 East (about 208 miles, up to 4 hr 27 min).'
 
 function lines(stops: Stop[], depart: Depart, motelId: string) {
   const m = motels.find((x) => x.id === motelId)

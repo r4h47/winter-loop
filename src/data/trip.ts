@@ -87,22 +87,22 @@ export const stops: Stop[] = [
     booking: 'Two queens sleep four, so book two rooms or request an extra bed, and call Mazadar to confirm its hours. Tell the desk you will arrive around 6:45 PM.',
   },
   {
-    id: 'breakfast', day: 2, block: 'Morning', time: '7:00 AM', until: '7:45 AM', status: 'Breakfast 6–9 AM', title: 'Breakfast & Checkout', where: 'Latham or Colonie, NY', point: 'latham',
+    id: 'breakfast', day: 2, block: 'Morning', time: '9:00 AM', until: '10:00 AM', status: 'Checkout by 11 AM', title: 'Wake Up & Checkout', where: 'Latham or Colonie, NY', point: 'latham',
     query: '681 Troy Schenectady Rd, Latham, NY 12110',
-    text: 'Eat at the motel, clear the windshield, and load the car.',
-    booking: 'The plan lists free breakfast at the Econo Lodge and the Super 8 only. If you book the Red Roof Inn, bring breakfast.',
+    text: 'Sleep until 9:00, clear the windshield, load the car, and leave at 10:00.',
+    booking: 'Motel breakfast is listed 6–9 AM, so it will be over. Pack breakfast, or send one person down before 9.',
   },
   {
-    id: 'saratoga', day: 2, block: 'Morning', time: '8:30 AM', until: '9:30 AM', status: 'Outdoor / Year-Round', title: 'Congress Park, Saratoga Springs', where: 'Saratoga Springs, NY', point: 'saratoga',
+    id: 'saratoga', day: 2, block: 'Morning', time: '10:45 AM', until: '12:00 PM', status: 'Outdoor / Year-Round', title: 'Congress Park & Brunch, Saratoga Springs', where: 'Saratoga Springs, NY', point: 'saratoga',
     query: '268 Broadway, Saratoga Springs, NY 12866',
-    text: 'Walk the park’s mineral springs, pavilions, and bridges, then Broadway next door.',
+    text: 'Walk the park’s mineral springs, pavilions, and bridges, then eat on Broadway next door.',
     leg: { label: 'From Latham', road: 'I‑87 North', legs: ['latham-saratoga'] },
     tip: 'The Spirit of Life and the duck pond bridges make the best morning group photo.',
     photo: { name: 'congress', alt: 'A columned stone pavilion beside the pond in Congress Park, photographed in summer' },
     optional: true,
   },
   {
-    id: 'bennington', day: 2, block: 'Morning', time: '11:00 AM', until: '12:15 PM', status: 'Outdoor / 24h', title: 'Covered Bridges & the Monument', where: 'Bennington, VT', point: 'silk',
+    id: 'bennington', day: 2, block: 'Afternoon', time: '1:30 PM', until: '3:00 PM', status: 'Outdoor / 24h', title: 'Covered Bridges & the Monument', where: 'Bennington, VT', point: 'silk',
     query: 'Silk Road Covered Bridge, Bennington, VT 05201',
     text: 'Drive through the red Silk Road and Paper Mill Village bridges, then stop below the 306-foot Bennington Battle Monument.',
     leg: { label: 'From Saratoga Springs', road: 'NY‑29 and NY‑67 East', legs: ['saratoga-silk', 'silk-paper', 'paper-monument'] },
@@ -111,19 +111,19 @@ export const stops: Stop[] = [
     photo: { name: 'bridge', alt: 'The red Silk Road covered bridge in Bennington hung with a holiday wreath in winter' },
   },
   {
-    id: 'manchester', day: 2, block: 'Afternoon', time: '1:15 PM', until: '3:00 PM', status: 'Holiday Hours', title: 'Lunch in Manchester', where: 'Manchester, VT', point: 'manchester',
+    id: 'manchester', day: 2, block: 'Afternoon', time: '3:50 PM', until: '6:15 PM', status: 'Holiday Hours', title: 'Evening in Manchester', where: 'Manchester, VT', point: 'manchester',
     query: 'Main St, Manchester, VT 05254',
-    text: 'Walk Manchester Center, find hot chocolate or something with maple, and eat a late lunch.',
+    text: 'Catch the last light at 4:24 PM, then walk Manchester Center, warm up with hot chocolate, and eat dinner before the drive.',
     leg: { label: 'From Bennington', road: 'US‑7 North', legs: ['monument-manchester'] },
-    tip: 'Walk Main Street by the Equinox for marble sidewalks, white clapboard, and the ridge behind.',
+    tip: 'Walk Main Street by the Equinox first, while it is light, for marble sidewalks, white clapboard, and the ridge behind.',
     photo: { name: 'equinox', alt: 'The white columned Equinox hotel on Main Street in Manchester Village, photographed in summer' },
   },
   {
-    id: 'home', day: 2, block: 'Evening', time: '7:45 PM', until: '7:45 PM', status: 'Check 511', title: 'Back in Boston', where: 'Boston, MA', point: 'boston',
+    id: 'home', day: 2, block: 'Evening', time: '11:00 PM', until: '11:00 PM', status: 'Check 511', title: 'Back in Boston', where: 'Boston, MA', point: 'boston',
     query: 'Boston, MA',
-    text: 'Leave at 3:00 PM to finish VT‑30 by the 4:23 PM sunset. Follow VT‑30 to Brattleboro, I‑91 South, then Route 2 East.',
+    text: 'Leave at 6:15 PM after dinner. Follow VT‑30 to Brattleboro, I‑91 South, then Route 2 East.',
     leg: { label: 'From Manchester', road: 'VT‑30, I‑91, and Route 2', legs: ['manchester-boston'] },
-    tip: 'If snow starts after Manchester, stay on I‑91 South to I‑90 East instead of Route 2.',
+    tip: 'All of VT‑30 is dark at this hour, so fill up and switch drivers in Manchester. If snow starts, stay on I‑91 South to I‑90 East instead of Route 2.',
     links: [['New England 511', 'https://newengland511.org/'], ['Mass511', 'https://mass511.com/']],
     photo: { name: 'winhall', alt: 'The half-frozen Winhall River near VT‑30 in January' },
   },
@@ -133,8 +133,8 @@ const direct: Leg = { label: 'From Latham', road: 'NY‑7 East', legs: ['latham-
 
 export function activeStops(detour: boolean): Stop[] {
   const list = detour ? stops : stops.filter((s) => !s.optional).map((s) => {
-    if (s.id === 'bennington') return { ...s, leg: direct }
-    if (s.id === 'breakfast') return { ...s, time: '8:15 AM', until: '9:45 AM' }
+    if (s.id === 'bennington') return { ...s, block: 'Morning' as const, time: '11:20 AM', until: '1:15 PM', leg: direct }
+    if (s.id === 'manchester') return { ...s, time: '2:05 PM' }
     return s
   })
   // Departure is always the previous stop's end, so the two can never disagree.
