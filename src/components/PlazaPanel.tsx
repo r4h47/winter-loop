@@ -16,7 +16,7 @@ type Props = {
   picked: string
   onPick: (id: string) => void
 }
-const tracks: [Track, string][] = [['day1', 'Day 1'], ['day2', 'Day 2'], ['storm', 'Storm Route']]
+const tracks: [Track, string][] = [['all', 'Full Route'], ['day1', 'Day 1'], ['day2', 'Day 2'], ['storm', 'Storm Route']]
 
 export function PlazaPanel({ track, setTrack, list, next, off, onRoute, live, start, stop, picked, onPick }: Props) {
   const [now, setNow] = useState(() => Date.now())
@@ -61,14 +61,14 @@ export function PlazaPanel({ track, setTrack, list, next, off, onRoute, live, st
             <button type="button" aria-pressed={picked === p.id} onClick={() => onPick(p.id)}>
               <Fuel size={16} aria-hidden="true" />
               <span><b>{p.name}</b><small>{p.road}. {p.has}.{p.note && ` ${p.note}`}</small></span>
-              <em>{p.state === 'passed' ? 'Passed' : p.state === 'plain' ? `mile ${Math.round(p.mile)}` : miles(p.gap)}</em>
+              <em>{p.state === 'passed' ? 'Passed' : p.state === 'plain' ? `${track === 'all' ? `Day ${p.drive === 'day1' ? 1 : 2}, ` : ''}mile ${Math.round(p.mile)}` : miles(p.gap)}</em>
             </button>
             {picked === p.id && <a className="text-btn" href={plazaNav(p)} target="_blank" rel="noreferrer"><Navigation size={16} aria-hidden="true" />Navigate<span className="sr"> to {p.name}, opens in a new tab</span></a>}
           </li>
         ))}
       </ol>
-      {track === 'day1' && <p className="muted">No plazas between Stockbridge and Latham.</p>}
-      {track === 'day2' && <p className="muted">No plazas with fuel on Day 2. Fill up in Latham and Manchester, then use town exits.</p>}
+      {(track === 'day1' || track === 'all') && <p className="muted">Day 1 has no plazas between Stockbridge and Latham.</p>}
+      {(track === 'day2' || track === 'all') && <p className="muted">No plazas with fuel on Day 2. Fill up in Latham and Manchester, then use town exits.</p>}
       <a className="text-btn" href="https://www.google.com/maps/search/?api=1&query=gas+station+with+restroom" target="_blank" rel="noreferrer"><ExternalLink size={16} aria-hidden="true" />Gas & Restrooms Near Me<span className="sr">, opens Google Maps in a new tab</span></a>
       <p className="muted">Your location stays on this device. A passenger should use this while driving.</p>
     </div>

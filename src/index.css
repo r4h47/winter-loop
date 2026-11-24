@@ -197,6 +197,28 @@ h1 { max-width: 16ch; font-size: 64px; font-weight: 700; line-height: 1.1; lette
 .map-side .btns { margin-top: var(--base); }
 .map-side > p:not(.muted) { color: var(--body); }
 
+.map-frame { position: relative; }
+.map-canvas { touch-action: pan-y; cursor: grab; user-select: none; -webkit-user-select: none; }
+.map-canvas[data-zoomed] { touch-action: none; }
+.map-canvas[data-drag] { cursor: grabbing; }
+.map-canvas[data-drag] :is(.map-g, .pin, .m-state, .me) { transition: none !important; }
+.map-canvas:focus-visible { outline-offset: -2px; border-radius: var(--r-md); }
+.zoom { position: absolute; left: 12px; bottom: 12px; display: flex; border-radius: var(--r-sm); background: var(--canvas); box-shadow: var(--shadow); }
+.zoom button { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--r-sm); }
+.zoom button + button { border-left: 1px solid var(--hairline-soft); }
+.zoom button:hover { background: var(--strong); }
+.zoom button:disabled { color: var(--border-strong); background: none; }
+.zoom button:focus-visible { z-index: 1; }
+.pin.plaza.small .dot { width: 22px; height: 22px; left: -11px; top: -11px; }
+.pin.plaza.small .dot svg { width: 12px; height: 12px; }
+.pin[data-mini] .dot { width: 14px; height: 14px; left: -7px; top: -7px; font-size: 0; }
+.pin[data-mini]:not([data-named], [aria-pressed='true']) .pin-label { opacity: 0; }
+.pin[data-mini].above .pin-label { bottom: 12px; }
+.pin[data-mini].below .pin-label { top: 12px; }
+.pin[data-mini].left .pin-label { right: 12px; }
+.pin[data-mini].right .pin-label { left: 12px; }
+.pin[data-mini]:is(:hover, :focus-visible) { z-index: 3; }
+.pin[data-mini]:is(:hover, :focus-visible) .pin-label { opacity: 1; }
 .chip-icon { display: inline-flex; align-items: center; gap: var(--sm); }
 .pin.plaza .dot { border-radius: var(--r-sm); background: var(--canvas); border: 2px solid var(--ink); color: var(--ink); }
 .pin.plaza[data-state='next'] { z-index: 2; }
@@ -442,7 +464,7 @@ input[aria-invalid='true'] { border-color: var(--error); }
   .cal { position: static; }
   .cal-menu { left: 16px; right: 16px; top: calc(100% + 8px); width: auto; max-width: 400px; margin-left: auto; }
   .stop-photo { grid-row: 1; margin-bottom: var(--sm); }
-  .map-canvas { height: 560px; }
+  .map-canvas { height: 460px; }
   .map-side { grid-template-columns: minmax(0, 1fr); }
   .map-side .photo { grid-row: auto; margin-bottom: var(--sm); }
   .map-side > :not(.photo) { grid-column: 1; }

@@ -1,13 +1,14 @@
 import map from '../data/map.json'
 import { duration, type LegKey, type Stop } from '../data/trip'
 
-export type Track = 'day1' | 'day2' | 'storm'
+type Drive = 'day1' | 'day2' | 'storm'
+export type Track = 'all' | Drive
 export type Point = [number, number]
 export type Plaza = { id: string; name: string; road: string; leg: LegKey; lon: number; lat: number; has: string; note?: string }
 
 /* Positions are from OpenStreetMap. Only places on your side of the road are listed. */
 const FULL = 'Fuel, food, restrooms'
-export const plazas: Record<Track, Plaza[]> = {
+export const plazas: Record<Drive, Plaza[]> = {
   day1: [
     { id: 'framingham', name: 'Framingham', road: 'I‑90 West', leg: 'boston-stockbridge', lon: -71.42837, lat: 42.31217, has: FULL },
     { id: 'westborough', name: 'Westborough', road: 'I‑90 West', leg: 'boston-stockbridge', lon: -71.59159, lat: 42.24537, has: FULL, note: 'A rebuild is planned here. Confirm it is open.' },
@@ -41,7 +42,7 @@ type Segment = { a: Point; b: Point; mile: number; miles: number; min: number; m
 export type Path = { segments: Segment[]; miles: number }
 
 /** Strings the track's legs together, with true leg miles and minutes spread along the line. */
-export function trackPath(track: Track, stops: Stop[]): Path {
+export function trackPath(track: Drive, stops: Stop[]): Path {
   const keys: LegKey[] = track === 'storm' ? ['storm'] : stops.filter((s) => s.day === (track === 'day1' ? 1 : 2)).flatMap((s) => s.leg?.legs ?? [])
   const segments: Segment[] = []
   let mile = 0
@@ -73,29 +74,40 @@ export function locate(path: Path, p: Point) {
   return best
 }
 
-export type Ahead = Plaza & { at: Point; mile: number; min: number; gap: number; wait: number; state: 'ahead' | 'next' | 'passed' | 'plain' }
+export type Ahead = Plaza & { drive: Drive; at: Point; mile: number; min: number; gap: number; wait: number; state: 'ahead' | 'next' | 'passed' | 'plain' }
 export const OFF_ROUTE = 4
 
-/** Every plaza on the track in driving order, measured from `me` when you are on the route. */
-export function plazaList(track: Track, stops: Stop[], me: Point | null) {
-  const path = trackPath(track, stops)
-  const pos = me && locate(path, me)
-  const onRoute = !!pos && pos.off <= OFF_ROUTE
-  const used = new Set(path.segments.length ? (track === 'storm' ? ['storm'] : stops.flatMap((s) => s.leg?.legs ?? [])) : [])
-  let nextFound = false
-  const list: Ahead[] = plazas[track].filter((p) => used.has(p.leg)).map((p) => {
+const stopsOn = (drive: Drive, stops: Stop[]) => {
+  const path = trackPath(drive, stops)
+  const used = new Set<LegKey>(drive === 'storm' ? ['storm'] : stops.flatMap((s) => s.leg?.legs ?? []))
+  return { path, list: plazas[drive].filter((p) => used.has(p.leg)).map((p) => {
     const at = project(p.lon, p.lat)
     const { mile, min } = locate(path, at)
-    return { ...p, at, mile, min, gap: 0, wait: 0, state: 'plain' as const }
-  }).sort((a, b) => a.mile - b.mile).map((p) => {
-    if (!pos || !onRoute) return p
-    const gap = p.mile - pos.mile
-    if (gap < -0.2) return { ...p, gap, state: 'passed' as const }
-    const state = nextFound ? ('ahead' as const) : ('next' as const)
+    return { ...p, drive, at, mile, min, gap: 0, wait: 0, state: 'plain' as Ahead['state'] }
+  }).sort((a, b) => a.mile - b.mile) }
+}
+
+/** Every plaza on the track in driving order, measured from `me` when you are on the route. */
+export function plazaList(track: Track, stops: Stop[], me: Point | null, today: 1 | 2 | null = null) {
+  const drives: Drive[] = track === 'all' ? ['day1', 'day2'] : [track]
+  const parts = drives.map((d) => ({ ...stopsOn(d, stops), drive: d, pos: null as ReturnType<typeof locate> | null }))
+  for (const p of parts) p.pos = me && locate(p.path, me)
+  // Both days share roads near Boston and Latham. Trust the calendar first, then the closer drive.
+  const sorted = [...parts].sort((a, b) => (a.pos?.off ?? 0) - (b.pos?.off ?? 0))
+  const onToday = parts.find((p) => today && p.drive === `day${today}` && p.pos && p.pos.off <= OFF_ROUTE)
+  const mine = onToday ?? sorted[0]
+  const onRoute = !!mine.pos && mine.pos.off <= OFF_ROUTE
+  let nextFound = false
+  const list: Ahead[] = parts.flatMap((part) => part.list.map((p): Ahead => {
+    if (!mine.pos || !onRoute) return p
+    if (part.drive !== mine.drive) return { ...p, state: drives.indexOf(part.drive) < drives.indexOf(mine.drive) ? 'passed' : 'plain' }
+    const gap = p.mile - mine.pos.mile
+    if (gap < -0.2) return { ...p, gap, state: 'passed' }
+    const state = nextFound ? 'ahead' : 'next'
     nextFound = true
-    return { ...p, gap: Math.max(0, gap), wait: Math.max(0, p.min - pos.min), state }
-  })
-  return { list, off: pos?.off ?? null, onRoute, next: list.find((p) => p.state === 'next') ?? null }
+    return { ...p, gap: Math.max(0, gap), wait: Math.max(0, p.min - mine.pos.min), state }
+  }))
+  return { list, off: mine.pos?.off ?? null, onRoute, next: list.find((p) => p.state === 'next') ?? null }
 }
 
 export const miles = (n: number) => `${n < 10 ? n.toFixed(1) : Math.round(n)} mi`

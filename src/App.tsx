@@ -13,6 +13,7 @@ import { defaultCosts, GROUP, isCosts, planRange, readCosts, syncGas, withBeds }
 import { planFromHash, planLink } from './lib/share'
 import './lib/offline'
 import { usd } from './lib/money'
+import { tripDayToday } from './lib/clock'
 import { useLive } from './lib/location'
 import type { Track } from './lib/plazas'
 import { scrollToId, useStored } from './lib/hooks'
@@ -27,7 +28,7 @@ const initial = (): Ui => {
   const track = q.get('plazas')
   return {
     detour,
-    track: track === 'day1' || track === 'day2' || track === 'storm' ? track : null,
+    track: track === 'all' || track === 'day1' || track === 'day2' || track === 'storm' ? track : null,
     day: q.get('day') === '2' ? 2 : 1,
     block: blocks.find((b) => b === q.get('time')) ?? 'All',
     stop: activeStops(detour).find((s) => s.id === q.get('stop'))?.id ?? 'stockbridge',
@@ -93,7 +94,7 @@ export default function App() {
   const gps = useLive()
   const setTrack = (track: Track | null) => {
     if (!track) gps.stop()
-    patch(track ? { track, view: track === 'day1' ? 'day1' : 'day2' } : { track })
+    patch(track ? { track, view: track === 'all' ? 'all' : track === 'day1' ? 'day1' : 'day2' } : { track })
   }
   const showPlazas = (day: Day) => {
     setTrack(`day${day}`)
@@ -136,7 +137,7 @@ export default function App() {
         <Hero depart={ui.depart} setDepart={(depart) => patch({ depart })} miles={miles} price={price} />
         <TripDay onPlazas={showPlazas} stops={stops} depart={ui.depart} motel={motel} />
         <Itinerary stops={stops} day={ui.day} setDay={setDay} block={ui.block} setBlock={(block) => patch({ block })} depart={ui.depart} detour={ui.detour} setDetour={setDetour} tradeoff={tradeoff} selected={ui.stop} onShowMap={showMap} />
-        <RouteMap stops={stops} view={ui.view} setView={setView} motel={motel} selected={ui.stop} onSelect={select} onOpen={open} track={ui.track} setTrack={setTrack} gps={gps} />
+        <RouteMap stops={stops} view={ui.view} setView={setView} motel={motel} selected={ui.stop} onSelect={select} onOpen={open} track={ui.track} setTrack={setTrack} today={tripDayToday(ui.depart)} gps={gps} />
         <Stays motel={motel} setMotel={setMotel} people={costs.people} beds={costs.beds} setBeds={(b) => setCosts((c) => withBeds(readCosts(c) ?? defaultCosts, b))} depart={ui.depart} stops={stops} />
         <Packing />
         <Costs costs={costs} setCosts={setCosts} miles={miles} />
