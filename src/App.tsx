@@ -124,7 +124,7 @@ export default function App() {
       {incoming && (
         <div className="incoming" role="region" aria-label="Shared plan">
           <div className="wrap">
-            <p>This link has a shared plan with names, costs, and a motel choice. Loading it replaces the ones saved in this browser.</p>
+            <p>This link has a shared plan with costs and a motel choice. Loading it replaces the ones saved in this browser.</p>
             <div className="btns">
               <button type="button" className="btn-primary btn-mid" onClick={() => { setCosts(() => incoming.costs); setMotelId(incoming.motel); closeIncoming() }}>Load Shared Plan</button>
               <button type="button" className="btn-secondary btn-mid" onClick={closeIncoming}>Keep Mine</button>

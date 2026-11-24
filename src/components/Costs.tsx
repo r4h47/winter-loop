@@ -110,7 +110,7 @@ export function Costs({ costs, setCosts, miles }: Props) {
                   <input key={i} type="text" name={`traveler-${i + 1}`} aria-label={`Name of traveler ${i + 1}`} autoComplete="off" spellCheck={false} maxLength={24} placeholder={`Traveler ${i + 1}…`} value={costs.names[i]} onChange={(e) => { const v = e.target.value; setCosts((c) => ({ ...c, names: c.names.map((n, j) => (j === i ? v : n)) })) }} />
                 ))}
               </div>
-              <p className="hint">Names and costs stay in this browser. Share Trip copies a link that carries them to the group.</p>
+              <p className="hint">Costs stay in this browser. Share Trip copies a link that carries them to the group.</p>
             </fieldset>
           </div>
           <aside className="tally" aria-label="Split summary">

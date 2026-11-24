@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ArrowDown } from 'lucide-react'
+import { roster } from '../lib/costs'
 import { departures, type Depart } from '../data/trip'
 
 const base = import.meta.env.BASE_URL
@@ -39,7 +40,8 @@ export function Hero({ depart, setDepart, miles, price }: { depart: Depart; setD
       />
       <div className="wrap hero-body">
         <h1 id="title">A Two-Day Winter Loop From&nbsp;Boston</h1>
-        <p className="hero-sub">The Berkshires, upstate New York, and southern Vermont. Five people, about {price} each.</p>
+        <p className="hero-sub">The Berkshires, upstate New York, and southern Vermont. About {price} each.</p>
+        <p className="hero-names">{new Intl.ListFormat('en-US').format(roster)}</p>
         <div className="pill">
           <div className="pill-seg pill-where">
             <span>Route</span>

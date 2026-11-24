@@ -15,7 +15,9 @@ export type CostState = {
 }
 export type Level = 'low' | 'mid' | 'high'
 export const MAX = 6
-export const GROUP = 5
+export const roster = ['Rahat', 'Tashin', 'Tansir', 'Forhad', 'Opu']
+export const GROUP = roster.length
+const placeholder = (i: number) => `Traveler ${i + 1}`
 export const levels: [Level, string][] = [['low', 'Plan Low'], ['mid', 'Midpoint'], ['high', 'Plan High']]
 
 /** Gas was priced for 430 miles and the motel for one room; scale both to the current choice. */
@@ -36,7 +38,7 @@ const everyone = () => Array.from({ length: MAX }, () => true)
 
 export const defaultCosts: CostState = {
   people: GROUP,
-  names: Array.from({ length: MAX }, (_, i) => `Traveler ${i + 1}`),
+  names: Array.from({ length: MAX }, (_, i) => roster[i] ?? placeholder(i)),
   amounts: preset('high', 430, 'two'),
   payers: { motel: 0, gas: 1, tolls: 2, skating: 3, food: 4 },
   shared: perRow(everyone),
@@ -57,7 +59,7 @@ export function readCosts(v: unknown): CostState | null {
   if (!costRows.every((r) => typeof c.amounts?.[r.id] === 'string' && seat(c.payers?.[r.id]))) return null
   return {
     people: c.people!,
-    names: c.names.map((n) => n.slice(0, 24)),
+    names: c.names.map((n, i) => (n === placeholder(i) ? (roster[i] ?? n) : n.slice(0, 24))),
     amounts: perRow((id) => c.amounts![id].slice(0, 10)),
     payers: perRow((id) => c.payers![id]),
     shared: perRow((id) => (bools(c.shared?.[id]) ? c.shared![id] : everyone())),
@@ -75,7 +77,7 @@ export const toCents = (s: string) => {
   return Number.isFinite(n) && n > 0 ? Math.round(Math.min(n, 99999) * 100) : 0
 }
 
-export const name = (c: CostState, i: number) => c.names[i].trim() || `Traveler ${i + 1}`
+export const name = (c: CostState, i: number) => c.names[i].trim() || roster[i] || placeholder(i)
 
 export const sharers = (shared: boolean[], people: number) => {
   const on = shared.slice(0, people).flatMap((x, i) => (x ? [i] : []))

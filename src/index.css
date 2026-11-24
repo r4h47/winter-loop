@@ -109,6 +109,7 @@ input[type='checkbox'], input[type='radio'] { width: 24px; height: 24px; margin:
 .hero-body { width: 100%; padding-block: var(--section) var(--xxl); }
 h1 { max-width: 16ch; font-size: 64px; font-weight: 700; line-height: 1.1; letter-spacing: -1px; }
 .hero-sub { max-width: 54ch; margin-top: var(--base); }
+.hero-names { margin-top: var(--sm); font-weight: 600; }
 .pill { display: flex; align-items: center; width: fit-content; max-width: 100%; min-height: 64px; margin-top: var(--xl); padding-right: var(--sm); background: var(--canvas); color: var(--ink); border-radius: var(--r-full); }
 .pill-seg { position: relative; display: flex; flex-direction: column; justify-content: center; min-height: 64px; padding: 8px 24px; white-space: nowrap; }
 .pill-seg + .pill-seg::before { content: ''; position: absolute; left: 0; top: 16px; bottom: 16px; width: 1px; background: var(--hairline); }
