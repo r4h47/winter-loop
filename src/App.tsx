@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { CalendarMenu } from './components/CalendarMenu'
 import { Nav } from './components/Nav'
 import { Hero } from './components/Hero'
 import { TripDay } from './components/TripDay'
@@ -7,9 +8,8 @@ import { RouteMap, type View } from './components/RouteMap'
 import { Stays } from './components/Stays'
 import { Packing } from './components/Packing'
 import { Costs } from './components/Costs'
-import { activeStops, blocks, credits, duration, motels, totals, type Block, type Day, type Depart } from './data/trip'
+import { activeStops, blocks, credits, duration, motelLeave, motels, totals, type Block, type Day, type Depart } from './data/trip'
 import { defaultCosts, GROUP, isCosts, planRange, readCosts, syncGas, withBeds } from './lib/costs'
-import { buildIcs, download } from './lib/ics'
 import { planFromHash, planLink } from './lib/share'
 import './lib/offline'
 import { usd } from './lib/money'
@@ -46,7 +46,7 @@ export default function App() {
   const other = totals(activeStops(!ui.detour))
   const range = planRange(miles, costs.beds)
   const price = `${usd(Math.floor(range.low / GROUP))}–${usd(Math.ceil(range.high / GROUP))}`
-  const tradeoff = `Leave the motel at 7:45 AM with Saratoga, or 9:45 AM without it. The detour adds ${Math.abs(miles - Math.round(other.miles))} miles and ${duration(Math.abs(route.minutes - other.minutes))} of driving.`
+  const tradeoff = `Leave the motel at ${motelLeave(true)} with Saratoga, or ${motelLeave(false)} without it. The detour adds ${Math.abs(miles - Math.round(other.miles))} miles and ${duration(Math.abs(route.minutes - other.minutes))} of driving.`
   useEffect(() => {
     const known = [430, Math.round(totals(activeStops(true)).miles), Math.round(totals(activeStops(false)).miles)]
     setCosts((c) => syncGas(readCosts(c) ?? defaultCosts, miles, known))
@@ -104,7 +104,7 @@ export default function App() {
   return (
     <>
       <a className="skip" href="#main">Skip to content</a>
-      <Nav link={() => planLink({ costs, motel })} onExport={() => download('winter-loop.ics', buildIcs(stops, ui.depart, motel), 'text/calendar;charset=utf-8')} />
+      <Nav link={() => planLink({ costs, motel })} calendar={<CalendarMenu stops={stops} depart={ui.depart} motel={motel} />} />
       {incoming && (
         <div className="incoming" role="region" aria-label="Shared plan">
           <div className="wrap">

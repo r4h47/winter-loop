@@ -16,7 +16,7 @@ function warning(stop: Stop, arrive: number) {
   if (stop.id === 'plaza' && arrive >= 18 * 60) return 'The last skating session will be over. Go straight to the motel.'
   if (stop.id === 'plaza' && arrive > 16 * 60) return 'You will miss the 4:00 PM start. The session still runs to 6:00 PM.'
   if (stop.id === 'bennington' && arrive > 13 * 60) return 'Running late. Cut Manchester lunch short to keep VT‑30 in daylight.'
-  if (stop.id === 'manchester' && arrive > 14 * 60 + 30) return 'Skip the long lunch. Sunset is about 4:20 PM and VT‑30 is dark after that.'
+  if (stop.id === 'manchester' && arrive > 14 * 60 + 30) return 'Skip the long lunch. Sunset is about 4:23 PM and VT‑30 is dark after that.'
   return ''
 }
 

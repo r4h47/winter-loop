@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Check, Download, Printer } from 'lucide-react'
-import { departures, motels, type Depart, type Stop } from '../data/trip'
+import { departures, duration, legInfo, motels, type Depart, type Stop } from '../data/trip'
 import { download } from '../lib/ics'
 import { offlineReady } from '../lib/offline'
 
-const STORM = 'Storm rule: check New England 511 at noon on Day 2. If VT-30 is snow-covered or under an advisory, skip Manchester and return by NY-7 to Albany and I-90 East (about 208 miles, 4 hr 27 min).'
+const STORM = 'Storm rule: check New England 511 at noon on Day 2. If VT-30 is snow-covered or under an advisory, skip Manchester and return by NY-7 to Albany and I-90 East (about 208 miles, up to 4 hr 27 min).'
 
 function lines(stops: Stop[], depart: Depart, motelId: string) {
   const m = motels.find((x) => x.id === motelId)
@@ -12,8 +12,8 @@ function lines(stops: Stop[], depart: Depart, motelId: string) {
   for (const day of [1, 2]) {
     out.push('', `DAY ${day}: ${day === 1 ? departures[depart].start : departures[depart].end}`)
     for (const s of stops.filter((x) => x.day === day)) {
-      out.push(`${s.time}  ${s.title}`, `  ${s.id === 'latham' || s.id === 'breakfast' ? (m ? `${m.name}, ${m.address}` : 'Motel, not chosen yet') : s.query}`)
-      if (s.leg) out.push(`  ${s.leg.label}, ${s.leg.road}`)
+      out.push(`${s.time}${s.until !== s.time ? ` to ${s.until}` : ''}  ${s.title}`, `  ${s.id === 'latham' || s.id === 'breakfast' ? (m ? `${m.name}, ${m.address}` : 'Motel, not chosen yet') : s.query}`)
+      if (s.leg) out.push(`  ${s.leg.label}, leaving ${s.leg.leave}, ${s.leg.road}, ${duration(legInfo(s.leg).minutes)}`)
       if (s.booking) out.push(`  ${s.booking}`)
     }
   }

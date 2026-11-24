@@ -6,7 +6,7 @@ export type Depart = '26' | '27'
 export type LegKey = keyof typeof map.legs
 export type PointKey = keyof typeof map.points
 
-export type Leg = { label: string; road: string; plan: string; legs: LegKey[] }
+export type Leg = { label: string; road: string; leave?: string; legs: LegKey[] }
 
 export type Stop = {
   id: string
@@ -55,7 +55,7 @@ export const stops: Stop[] = [
     id: 'stockbridge', day: 1, block: 'Morning', time: '9:45 AM', until: '11:05 AM', status: 'Outdoor / 24h', title: 'Stockbridge Main Street', where: 'Stockbridge, MA', point: 'stockbridge',
     query: '36 Main St, Stockbridge, MA 01262',
     text: 'Walk the 18th- and 19th-century storefronts Norman Rockwell painted at Christmas. The Red Lion Inn looks straight down the street.',
-    leg: { label: 'From Boston, leaving 6:30 AM', road: 'I‑90 West', plan: '2 hr 15 min', legs: ['boston-stockbridge'] },
+    leg: { label: 'From Boston', road: 'I‑90 West', legs: ['boston-stockbridge'] },
     tip: 'Stand by the Red Lion Inn and shoot down Main Street for the brick storefronts with the hills behind.',
     photo: { name: 'red-lion', alt: 'The white clapboard Red Lion Inn on Main Street in Stockbridge, with bare trees' },
   },
@@ -63,7 +63,7 @@ export const stops: Stop[] = [
     id: 'pittsfield', day: 1, block: 'Morning', time: '11:45 AM', until: '1:15 PM', status: 'Holiday Hours', title: 'Lunch in Pittsfield', where: 'North Street, Pittsfield, MA', point: 'pittsfield',
     query: 'North Street, Pittsfield, MA',
     text: 'Sofra Turkish Mediterranean Grill at 438 North Street serves halal shawarma and kebabs. Pizza by the slice and diners are nearby.',
-    leg: { label: 'From Stockbridge, leaving 11:05 AM', road: 'US‑7 North', plan: '15 min', legs: ['stockbridge-pittsfield'] },
+    leg: { label: 'From Stockbridge', road: 'US‑7 North', legs: ['stockbridge-pittsfield'] },
     booking: 'Call Sofra at (413) 884-7654 to confirm it is open on your date.',
     links: [['Sofra', 'https://www.sofraturkishma.com/']],
     tip: 'Be back in the car by 1:15 PM to park in Albany before the museum and the 4:00 PM skate.',
@@ -72,7 +72,7 @@ export const stops: Stop[] = [
     id: 'plaza', day: 1, block: 'Afternoon', time: '2:30 PM', until: '6:00 PM', status: 'Holiday Hours', title: 'Skate at Empire State Plaza', where: 'Albany, NY', point: 'plaza',
     query: 'Empire State Plaza, Albany, NY 12210',
     text: 'Warm up in the State Museum, then skate the 4:00–6:00 PM session below the Capitol and The Egg. Entry to the rink is free.',
-    leg: { label: 'From Pittsfield, leaving 1:15 PM', road: 'US‑20 and I‑90 West', plan: '45 min', legs: ['pittsfield-plaza'] },
+    leg: { label: 'From Pittsfield', road: 'US‑20 and I‑90 West', legs: ['pittsfield-plaza'] },
     booking: 'Weekend sessions run 10–12, 1–3, and 4–6. Skates rent for $5 with photo ID. No December 26 or 27 hours are posted yet, and weather can close the ice, so check that morning.',
     tip: 'Take the group photo around 4:30 PM, when the plaza lights and the Capitol come on.',
     links: [['Rink Status', 'https://empirestateplaza.ny.gov/ice-rink'], ['State Museum', 'https://nysm.nysed.gov/visit']],
@@ -80,10 +80,10 @@ export const stops: Stop[] = [
   },
   {
     links: [['Mazadar', 'https://www.mazadar.com/']],
-    id: 'latham', day: 1, block: 'Evening', time: '6:45 PM', until: '9:45 PM', status: 'Check-In From 3 PM', title: 'Check In & Dinner', where: 'Latham or Colonie, NY', point: 'latham',
+    id: 'latham', day: 1, block: 'Evening', time: '6:45 PM', until: '8:30 PM', status: 'Check-In From 3 PM', title: 'Check In & Dinner', where: 'Latham or Colonie, NY', point: 'latham',
     query: '681 Troy Schenectady Rd, Latham, NY 12110',
     text: 'Check in to the two-queen room, then pick up dinner. Mazadar Mediterranean Kitchen at 1839 Central Avenue lists all its meat as halal.',
-    leg: { label: 'From Albany, leaving 6:00 PM', road: 'local roads north', plan: '15 min', legs: ['plaza-latham'] },
+    leg: { label: 'From Albany', road: 'local roads north', legs: ['plaza-latham'] },
     booking: 'Two queens sleep four, so book two rooms or request an extra bed, and call Mazadar to confirm its hours. Tell the desk you will arrive around 6:45 PM.',
   },
   {
@@ -96,7 +96,7 @@ export const stops: Stop[] = [
     id: 'saratoga', day: 2, block: 'Morning', time: '8:30 AM', until: '9:30 AM', status: 'Outdoor / Year-Round', title: 'Congress Park, Saratoga Springs', where: 'Saratoga Springs, NY', point: 'saratoga',
     query: '268 Broadway, Saratoga Springs, NY 12866',
     text: 'Walk the park’s mineral springs, pavilions, and bridges, then Broadway next door.',
-    leg: { label: 'From Latham, leaving 7:45 AM', road: 'I‑87 North', plan: '25 min', legs: ['latham-saratoga'] },
+    leg: { label: 'From Latham', road: 'I‑87 North', legs: ['latham-saratoga'] },
     tip: 'The Spirit of Life and the duck pond bridges make the best morning group photo.',
     photo: { name: 'congress', alt: 'A columned stone pavilion beside the pond in Congress Park, photographed in summer' },
     optional: true,
@@ -105,39 +105,40 @@ export const stops: Stop[] = [
     id: 'bennington', day: 2, block: 'Morning', time: '11:00 AM', until: '12:15 PM', status: 'Outdoor / 24h', title: 'Covered Bridges & the Monument', where: 'Bennington, VT', point: 'silk',
     query: 'Silk Road Covered Bridge, Bennington, VT 05201',
     text: 'Drive through the red Silk Road and Paper Mill Village bridges, then stop below the 306-foot Bennington Battle Monument.',
-    leg: { label: 'From Saratoga Springs, leaving 9:30 AM', road: 'NY‑29 and NY‑67 East', plan: '45–55 min', legs: ['saratoga-silk', 'silk-paper', 'paper-monument'] },
+    leg: { label: 'From Saratoga Springs', road: 'NY‑29 and NY‑67 East', legs: ['saratoga-silk', 'silk-paper', 'paper-monument'] },
     booking: 'The grounds are free. The monument’s listed season ends October 31 and repair work is under way, so expect exterior views only.',
     tip: 'Park in the pull-off before the Silk Road bridge and photograph the red timber against the river.',
     photo: { name: 'bridge', alt: 'The red Silk Road covered bridge in Bennington hung with a holiday wreath in winter' },
   },
   {
-    id: 'manchester', day: 2, block: 'Afternoon', time: '1:15 PM', until: '3:15 PM', status: 'Holiday Hours', title: 'Lunch in Manchester', where: 'Manchester, VT', point: 'manchester',
+    id: 'manchester', day: 2, block: 'Afternoon', time: '1:15 PM', until: '3:00 PM', status: 'Holiday Hours', title: 'Lunch in Manchester', where: 'Manchester, VT', point: 'manchester',
     query: 'Main St, Manchester, VT 05254',
     text: 'Walk Manchester Center, find hot chocolate or something with maple, and eat a late lunch.',
-    leg: { label: 'From Bennington, leaving 12:15 PM', road: 'US‑7 North', plan: '30 min', legs: ['monument-manchester'] },
+    leg: { label: 'From Bennington', road: 'US‑7 North', legs: ['monument-manchester'] },
     tip: 'Walk Main Street by the Equinox for marble sidewalks, white clapboard, and the ridge behind.',
     photo: { name: 'equinox', alt: 'The white columned Equinox hotel on Main Street in Manchester Village, photographed in summer' },
   },
   {
-    id: 'home', day: 2, block: 'Evening', time: '8:00 PM', until: '8:00 PM', status: 'Check 511', title: 'Back in Boston', where: 'Boston, MA', point: 'boston',
+    id: 'home', day: 2, block: 'Evening', time: '7:45 PM', until: '7:45 PM', status: 'Check 511', title: 'Back in Boston', where: 'Boston, MA', point: 'boston',
     query: 'Boston, MA',
-    text: 'Leave by 3:15 PM so most of VT‑30 is driven before the 4:20 PM sunset. Follow VT‑30 to Brattleboro, I‑91 South, then Route 2 East. Plan on 8:00 PM with one short break.',
-    leg: { label: 'From Manchester, leaving 3:15 PM', road: 'VT‑30, I‑91, and Route 2', plan: '3 hr', legs: ['manchester-boston'] },
-    tip: 'If southern Vermont gets heavy snow, take I‑91 South to I‑90 East instead of VT‑30.',
+    text: 'Leave at 3:00 PM to finish VT‑30 by the 4:23 PM sunset. Follow VT‑30 to Brattleboro, I‑91 South, then Route 2 East.',
+    leg: { label: 'From Manchester', road: 'VT‑30, I‑91, and Route 2', legs: ['manchester-boston'] },
+    tip: 'If snow starts after Manchester, stay on I‑91 South to I‑90 East instead of Route 2.',
     links: [['New England 511', 'https://newengland511.org/'], ['Mass511', 'https://mass511.com/']],
     photo: { name: 'winhall', alt: 'The half-frozen Winhall River near VT‑30 in January' },
   },
 ]
 
-const direct: Leg = { label: 'From Latham, leaving 9:45 AM', road: 'NY‑7 East', plan: '45–55 min', legs: ['latham-silk', 'silk-paper', 'paper-monument'] }
+const direct: Leg = { label: 'From Latham', road: 'NY‑7 East', legs: ['latham-silk', 'silk-paper', 'paper-monument'] }
 
 export function activeStops(detour: boolean): Stop[] {
-  if (detour) return stops
-  return stops.filter((s) => !s.optional).map((s) => {
+  const list = detour ? stops : stops.filter((s) => !s.optional).map((s) => {
     if (s.id === 'bennington') return { ...s, leg: direct }
-    if (s.id === 'breakfast') return { ...s, time: '8:30 AM', until: '9:45 AM' }
+    if (s.id === 'breakfast') return { ...s, time: '8:15 AM', until: '9:45 AM' }
     return s
   })
+  // Departure is always the previous stop's end, so the two can never disagree.
+  return list.map((s, i) => (s.leg ? { ...s, leg: { ...s.leg, leave: list[i - 1].until } } : s))
 }
 
 export const legInfo = (leg: Leg) =>
@@ -211,3 +212,12 @@ export function directionsUrl(list: Stop[], view: 'all' | 'day1' | 'day2', motel
   q.set('waypoints', places.slice(1, -1).join('|'))
   return `https://www.google.com/maps/dir/?${q}`
 }
+
+const clock = (t: string) => {
+  const [, h, m, p] = /(\d+):(\d+) (AM|PM)/.exec(t)!
+  return (Number(h) % 12 + (p === 'PM' ? 12 : 0)) * 60 + Number(m)
+}
+/** Minutes left over between the drive and the arrival time. */
+export const buffer = (s: Stop) => (s.leg?.leave ? clock(s.time) - clock(s.leg.leave) - legInfo(s.leg).minutes : 0)
+
+export const motelLeave = (detour: boolean) => activeStops(detour).find((s) => s.id === 'breakfast')!.until

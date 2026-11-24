@@ -65,7 +65,7 @@ export function RouteMap({ stops, view, setView, motel, selected, onSelect, onOp
           <div className="chips" role="group" aria-label="Map view">
             {views.map(([v, l]) => <button key={v} type="button" className="chip" aria-pressed={view === v} onClick={() => setView(v)}>{l}</button>)}
           </div>
-          <p className="map-sum num" aria-live="polite"><b>{Math.round(sum.miles)}&nbsp;miles</b>, allow {duration(sum.minutes)} of driving</p>
+          <p className="map-sum num" aria-live="polite"><b>{Math.round(sum.miles)}&nbsp;miles</b>, about {duration(sum.minutes)} of driving</p>
         </div>
         <div className="map-grid">
           <div>
@@ -96,10 +96,10 @@ export function RouteMap({ stops, view, setView, motel, selected, onSelect, onOp
           </div>
           <div className="map-side" aria-live="polite">
             {cur.photo && <Photo name={cur.photo.name} alt={cur.photo.alt} sizes="(min-width: 1128px) 360px, calc(100vw - 48px)" />}
-            <p className="num muted">Day {cur.day}, {cur.time}</p>
+            <p className="num muted">Day {cur.day}, {cur.time}{cur.until !== cur.time && ` to ${cur.until}`}</p>
             <h3>{cur.title}</h3>
             <p>{cur.where}</p>
-            {cur.leg && <p className="num">{Math.round(legInfo(cur.leg).miles)}&nbsp;miles, allow {duration(legInfo(cur.leg).minutes)}</p>}
+            {cur.leg && <p className="num">{Math.round(legInfo(cur.leg).miles)}&nbsp;miles, {duration(legInfo(cur.leg).minutes)}</p>}
             <div className="btns">
               <button type="button" className="btn-primary" onClick={() => onOpen(cur.id)}>Open in Itinerary</button>
               <a className="btn-secondary" href={directionsUrl(stops, view, motel)} target="_blank" rel="noreferrer">Open in Google Maps<ExternalLink size={16} aria-hidden="true" /><span className="sr">: {views.find(([v]) => v === view)?.[1]} directions, opens in a new tab</span></a>

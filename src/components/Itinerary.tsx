@@ -1,6 +1,6 @@
 import { useRef, type KeyboardEvent } from 'react'
 import { Camera, Car, ExternalLink, MapPin, Ticket } from 'lucide-react'
-import { blocks, departures, duration, legInfo, mapsUrl, type Block, type Day, type Depart, type Stop } from '../data/trip'
+import { blocks, buffer, departures, duration, legInfo, mapsUrl, type Block, type Day, type Depart, type Stop } from '../data/trip'
 import { Photo } from './Photo'
 
 type Props = {
@@ -78,12 +78,12 @@ function StopRow({ stop: s, on, onShowMap }: { stop: Stop; on: boolean; onShowMa
   const info = s.leg && legInfo(s.leg)
   return (
     <li className={`stop${s.photo ? ' has-photo' : ''}`} id={`stop-${s.id}`} tabIndex={-1} data-on={on || undefined}>
-      <time className="num stop-time">{s.time.replace(' ', ' ')}</time>
+      <p className="num stop-time"><time>{s.time.replace(' ', ' ')}</time><small>{s.until !== s.time ? `to ${s.until.replace(' ', ' ')}` : s.id === 'home' ? 'arrive' : 'depart'}</small></p>
       <div className="stop-main">
         {s.leg && info && (
           <p className="leg">
             <Car size={16} aria-hidden="true" />
-            <span><b>{s.leg.label}</b>, {s.leg.road}. <span className="num">{Math.round(info.miles)}&nbsp;mi, {s.leg.plan.replaceAll(' ', ' ')} planned; allow {duration(info.minutes)}.</span></span>
+            <span><b>{s.leg.label}, leaving {s.leg.leave?.replace(' ', '\u00a0')}</b>, {s.leg.road}. <span className="num">{Math.round(info.miles)}&nbsp;mi, {duration(info.minutes)} drive, {duration(buffer(s))} spare.</span></span>
           </p>
         )}
         <h4>{s.title}<em className="badge status num">{s.status}</em>{s.optional && <em className="badge">Optional</em>}</h4>

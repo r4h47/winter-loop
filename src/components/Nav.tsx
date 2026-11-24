@@ -1,16 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
-import { CalendarPlus, Check, LoaderCircle, Menu, Share2, X } from 'lucide-react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { Check, LoaderCircle, Menu, Share2, X } from 'lucide-react'
 import { useCopy } from '../lib/hooks'
 
 const links = [['itinerary', 'Itinerary'], ['map', 'Map'], ['stays', 'Stays'], ['packing', 'Packing'], ['costs', 'Costs']] as const
 
-export function Nav({ onExport, link }: { onExport: () => void; link: () => string }) {
-  const [saved, setSaved] = useState(false)
-  useEffect(() => {
-    if (!saved) return
-    const t = setTimeout(() => setSaved(false), 4000)
-    return () => clearTimeout(t)
-  }, [saved])
+export function Nav({ calendar, link }: { calendar: ReactNode; link: () => string }) {
   const [open, setOpen] = useState(false)
   const [current, setCurrent] = useState('')
   const toggle = useRef<HTMLButtonElement>(null)
@@ -61,10 +55,7 @@ export function Nav({ onExport, link }: { onExport: () => void; link: () => stri
         </a>
         <nav aria-label="Sections" className="nav-links"><ul>{items()}</ul></nav>
         <div className="nav-actions">
-          <button type="button" className="btn-secondary btn-small" onClick={() => { onExport(); setSaved(true) }}>
-            {saved ? <Check size={16} aria-hidden="true" /> : <CalendarPlus size={16} aria-hidden="true" />}
-            <span>{saved ? 'Exported .ics' : 'Export .ics'}</span>
-          </button>
+          {calendar}
           <button type="button" className="btn-secondary btn-small" disabled={state === 'pending'} onClick={() => copy(link())}>
             {state === 'pending' ? <LoaderCircle className="spin" size={16} aria-hidden="true" /> : state === 'done' ? <Check size={16} aria-hidden="true" /> : <Share2 size={16} aria-hidden="true" />}
             <span>{state === 'pending' ? 'Copying…' : state === 'done' ? 'Link Copied' : state === 'error' ? 'Copy Failed' : 'Share Trip'}</span>
@@ -73,7 +64,7 @@ export function Nav({ onExport, link }: { onExport: () => void; link: () => stri
             {open ? <X size={20} aria-hidden="true" /> : <Menu size={20} aria-hidden="true" />}
           </button>
         </div>
-        <span className="sr" role="status">{saved ? 'Calendar file exported. ' : ''}{state === 'done' ? 'Group link copied, with names and costs inside' : state === 'error' ? 'Could not copy. Copy the address from your browser instead.' : ''}</span>
+        <span className="sr" role="status">{state === 'done' ? 'Group link copied, with names and costs inside' : state === 'error' ? 'Could not copy. Copy the address from your browser instead.' : ''}</span>
       </div>
       <nav id="menu" aria-label="Sections, mobile" className="nav-sheet" hidden={!open}><ul className="wrap">{items(() => setOpen(false))}</ul></nav>
     </header>

@@ -9,12 +9,11 @@ const places = [
   { key: 'Boston', day: 1, at: [42.36, -71.06] },
 ] as const
 
-/* AlAdhan, ISNA method, standard Asr. Fajr, sunrise, Dhuhr, Asr, Maghrib, Isha. Times move at most a minute between the two departure options. */
-const prayer = [
-  { place: 'Day 1, Albany', t: ['5:59 AM', '7:24 AM', '11:56 AM', '2:10 PM', '4:28 PM', '5:53 PM'] },
-  { place: 'Day 2, Saratoga', t: ['6:00 AM', '7:26 AM', '11:57 AM', '2:09 PM', '4:27 PM', '5:53 PM'] },
-  { place: 'Day 2, Boston', t: ['5:48 AM', '7:12 AM', '11:45 AM', '2:00 PM', '4:18 PM', '5:43 PM'] },
-]
+/* AlAdhan, ISNA angles, Hanafi Asr, at the place the schedule puts you. */
+type Prayer = [time: string, place: string]
+const day1: Prayer[] = [['5:48 AM', 'Boston'], ['7:15 AM', 'Worcester'], ['11:54 AM', 'Pittsfield'], ['2:46 PM', 'Albany'], ['4:28 PM', 'Albany'], ['5:53 PM', 'Albany']]
+const day2 = (fajr: string, asr: string): Prayer[] => [[fajr, 'Latham'], ['7:25 AM', 'Latham'], ['11:54 AM', 'Bennington'], [asr, 'Manchester'], ['4:23 PM', 'Brattleboro'], ['5:49 PM', 'Greenfield']]
+const prayer: Record<Depart, Prayer[][]> = { '26': [day1, day2('5:59 AM', '2:41 PM')], '27': [day1, day2('6:00 AM', '2:42 PM')] }
 const cols = ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha']
 
 const sky = (c: number) =>
@@ -98,10 +97,10 @@ export function Conditions({ depart }: { depart: Depart }) {
       <div className="cond-col">
         <h3>Daylight & Prayer Times</h3>
           <table className="prayer num">
-            <thead><tr><th scope="col"><span className="sr">Time</span></th>{prayer.map((r) => <th scope="col" key={r.place}>{r.place}</th>)}</tr></thead>
-            <tbody>{cols.map((c, i) => <tr key={c}><th scope="row">{c}</th>{prayer.map((r) => <td key={r.place}>{r.t[i].replace(' ', ' ')}</td>)}</tr>)}</tbody>
+            <thead><tr><th scope="col"><span className="sr">Time</span></th>{[1, 2].map((d) => <th scope="col" key={d}>Day {d}</th>)}</tr></thead>
+            <tbody>{cols.map((c, i) => <tr key={c}><th scope="row">{c}</th>{prayer[depart].map((r, d) => <td key={d}><b>{r[i][0].replace(' ', '\u00a0')}</b> <span>{r[i][1]}</span></td>)}</tr>)}</tbody>
           </table>
-        <p className="muted">ISNA method. Maghrib is sunset.</p>
+        <p className="muted">Hanafi Asr, ISNA angles for Fajr and Isha. Maghrib is sunset. Towns follow the schedule, so use your local time if you run late.</p>
       </div>
     </div>
   )
